@@ -17,7 +17,7 @@ stages:
 
       - script: |
         sudo apt-get update
-        sudo apt install clang llvm-dev libjansson-dev libssl-dev bison flex make cmake make flex bison
+        sudo apt install clang llvm-dev libjansson-dev libssl-dev bison flex make cmake
         displayName: 'Prepare Build Env'
 
       - script: |
@@ -28,7 +28,7 @@ stages:
       - script: |
         cd src/c/runtime
         make VERBOSE=1
-        displayName: 'Build runtime'
+        displayName: 'Build Runtime'
 
       - script: |
         cd src/c/weaver
@@ -46,4 +46,4 @@ stages:
         cd src/c/test
         make VERBOSE=1
         sh t0001-cbinding-basic.t
-        displayName: 'Run Smoke Tests'
+        displayName: 'Run C Smoke Tests'
