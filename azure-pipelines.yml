@@ -1,0 +1,49 @@
+pr:
+  branches:
+    include:
+    - main
+
+stages:
+- stage: Main
+  jobs:
+  - job: Main_Ubuntu
+    pool:
+      vmImage: 'ubuntu-16.04'
+    timeoutInMinutes: 0
+
+    steps:
+      - checkout: self
+        clean: boolean
+
+      - script: |
+        sudo apt-get update
+        sudo apt install clang llvm-dev libjansson-dev libssl-dev bison flex make cmake make flex bison
+        displayName: 'Prepare Build Env'
+
+      - script: |
+        cd src/c/parser
+        make VERBOSE=1
+        displayName: 'Build Parser'
+
+      - script: |
+        cd src/c/runtime
+        make VERBOSE=1
+        displayName: 'Build runtime'
+
+      - script: |
+        cd src/c/weaver
+        mkdir build
+        cd build
+        LLVM_DIR=/usr/lib/llvm-6.0/lib/cmake/llvm cmake ..
+        displayName: 'Configure Weaver with CMake'
+
+      - script: |
+        cd src/c/weaver/build
+        make VERBOSE=1
+        displayName: 'Build Weaver'
+
+      - script: |
+        cd src/c/test
+        make VERBOSE=1
+        sh t0001-cbinding-basic.t
+        displayName: 'Run Smoke Tests'
